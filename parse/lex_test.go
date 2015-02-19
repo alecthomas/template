@@ -26,6 +26,7 @@ var itemName = map[itemType]string{
 	itemPipe:         "pipe",
 	itemRawString:    "raw string",
 	itemRightDelim:   "right delim",
+	itemElideNewline: "elide newline",
 	itemRightParen:   ")",
 	itemSpace:        "space",
 	itemString:       "string",
@@ -58,24 +59,26 @@ type lexTest struct {
 }
 
 var (
-	tEOF      = item{itemEOF, 0, ""}
-	tFor      = item{itemIdentifier, 0, "for"}
-	tLeft     = item{itemLeftDelim, 0, "{{"}
-	tLpar     = item{itemLeftParen, 0, "("}
-	tPipe     = item{itemPipe, 0, "|"}
-	tQuote    = item{itemString, 0, `"abc \n\t\" "`}
-	tRange    = item{itemRange, 0, "range"}
-	tRight    = item{itemRightDelim, 0, "}}"}
-	tRpar     = item{itemRightParen, 0, ")"}
-	tSpace    = item{itemSpace, 0, " "}
-	raw       = "`" + `abc\n\t\" ` + "`"
-	tRawQuote = item{itemRawString, 0, raw}
+	tEOF          = item{itemEOF, 0, ""}
+	tFor          = item{itemIdentifier, 0, "for"}
+	tLeft         = item{itemLeftDelim, 0, "{{"}
+	tLpar         = item{itemLeftParen, 0, "("}
+	tPipe         = item{itemPipe, 0, "|"}
+	tQuote        = item{itemString, 0, `"abc \n\t\" "`}
+	tRange        = item{itemRange, 0, "range"}
+	tRight        = item{itemRightDelim, 0, "}}"}
+	tElideNewline = item{itemElideNewline, 0, "\\"}
+	tRpar         = item{itemRightParen, 0, ")"}
+	tSpace        = item{itemSpace, 0, " "}
+	raw           = "`" + `abc\n\t\" ` + "`"
+	tRawQuote     = item{itemRawString, 0, raw}
 )
 
 var lexTests = []lexTest{
 	{"empty", "", []item{tEOF}},
 	{"spaces", " \t\n", []item{{itemText, 0, " \t\n"}, tEOF}},
 	{"text", `now is the time`, []item{{itemText, 0, "now is the time"}, tEOF}},
+	{"elide newline", "{{}}\\", []item{tLeft, tRight, tElideNewline, tEOF}},
 	{"text with comment", "hello-{{/* this is a comment */}}-world", []item{
 		{itemText, 0, "hello-"},
 		{itemText, 0, "-world"},

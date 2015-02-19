@@ -339,6 +339,8 @@ func (t *Tree) itemList() (list *ListNode, next Node) {
 //	text | action
 func (t *Tree) textOrAction() Node {
 	switch token := t.nextNonSpace(); token.typ {
+	case itemElideNewline:
+		return t.elideNewline()
 	case itemText:
 		return t.newText(token.pos, token.val)
 	case itemLeftDelim:
@@ -347,6 +349,27 @@ func (t *Tree) textOrAction() Node {
 		t.unexpected(token, "input")
 	}
 	return nil
+}
+
+// elideNewline:
+// Remove newlines trailing rightDelim if \\ is present.
+func (t *Tree) elideNewline() Node {
+	token := t.peek()
+	if token.typ != itemText {
+		t.unexpected(token, "input")
+		return nil
+	}
+
+	t.next()
+	stripped := strings.TrimLeft(token.val, "\n\r")
+	diff := len(token.val) - len(stripped)
+	if diff > 0 {
+		// This is a bit nasty. We mutate the token in-place to remove
+		// preceding newlines.
+		token.pos += Pos(diff)
+		token.val = stripped
+	}
+	return t.newText(token.pos, token.val)
 }
 
 // Action:

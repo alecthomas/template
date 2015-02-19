@@ -227,6 +227,8 @@ var parseTests = []parseTest{
 		`{{with .X}}"hello"{{end}}`},
 	{"with with else", "{{with .X}}hello{{else}}goodbye{{end}}", noError,
 		`{{with .X}}"hello"{{else}}"goodbye"{{end}}`},
+	{"elide newline", "{{true}}\\\n  ", noError,
+		`{{true}}"  "`},
 	// Errors.
 	{"unclosed action", "hello{{range", hasError, ""},
 	{"unmatched end", "{{end}}", hasError, ""},
@@ -246,6 +248,7 @@ var parseTests = []parseTest{
 	{"adjacent args", "{{printf 3`x`}}", hasError, ""},
 	{"adjacent args with .", "{{printf `x`.}}", hasError, ""},
 	{"extra end after if", "{{if .X}}a{{else if .Y}}b{{end}}{{end}}", hasError, ""},
+	{"invalid newline elision", "{{true}}\\{{true}}", hasError, ""},
 	// Equals (and other chars) do not assignments make (yet).
 	{"bug0a", "{{$x := 0}}{{$x}}", noError, "{{$x := 0}}{{$x}}"},
 	{"bug0b", "{{$x = 1}}{{$x}}", hasError, ""},

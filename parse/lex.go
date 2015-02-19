@@ -43,19 +43,20 @@ const (
 	itemComplex                      // complex constant (1+2i); imaginary is just a number
 	itemColonEquals                  // colon-equals (':=') introducing a declaration
 	itemEOF
-	itemField      // alphanumeric identifier starting with '.'
-	itemIdentifier // alphanumeric identifier not starting with '.'
-	itemLeftDelim  // left action delimiter
-	itemLeftParen  // '(' inside action
-	itemNumber     // simple number, including imaginary
-	itemPipe       // pipe symbol
-	itemRawString  // raw quoted string (includes quotes)
-	itemRightDelim // right action delimiter
-	itemRightParen // ')' inside action
-	itemSpace      // run of spaces separating arguments
-	itemString     // quoted string (includes quotes)
-	itemText       // plain text
-	itemVariable   // variable starting with '$', such as '$' or  '$1' or '$hello'
+	itemField        // alphanumeric identifier starting with '.'
+	itemIdentifier   // alphanumeric identifier not starting with '.'
+	itemLeftDelim    // left action delimiter
+	itemLeftParen    // '(' inside action
+	itemNumber       // simple number, including imaginary
+	itemPipe         // pipe symbol
+	itemRawString    // raw quoted string (includes quotes)
+	itemRightDelim   // right action delimiter
+	itemElideNewline // elide newline after right delim
+	itemRightParen   // ')' inside action
+	itemSpace        // run of spaces separating arguments
+	itemString       // quoted string (includes quotes)
+	itemText         // plain text
+	itemVariable     // variable starting with '$', such as '$' or  '$1' or '$hello'
 	// Keywords appear after all the rest.
 	itemKeyword  // used only to delimit the keywords
 	itemDot      // the cursor, spelled '.'
@@ -261,6 +262,10 @@ func lexComment(l *lexer) stateFn {
 func lexRightDelim(l *lexer) stateFn {
 	l.pos += Pos(len(l.rightDelim))
 	l.emit(itemRightDelim)
+	if l.peek() == '\\' {
+		l.pos++
+		l.emit(itemElideNewline)
+	}
 	return lexText
 }
 
@@ -269,7 +274,7 @@ func lexInsideAction(l *lexer) stateFn {
 	// Either number, quoted string, or identifier.
 	// Spaces separate arguments; runs of spaces turn into itemSpace.
 	// Pipe symbols separate and are emitted.
-	if strings.HasPrefix(l.input[l.pos:], l.rightDelim) {
+	if strings.HasPrefix(l.input[l.pos:], l.rightDelim+"\\") || strings.HasPrefix(l.input[l.pos:], l.rightDelim) {
 		if l.parenDepth == 0 {
 			return lexRightDelim
 		}
