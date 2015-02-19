@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-	"text/template/parse"
+	"github.com/alecthomas/template/parse"
 )
 
 const (

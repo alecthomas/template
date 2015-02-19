@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 	"strings"
-	"text/template"
+	"github.com/alecthomas/template"
 )
 
 // This example demonstrates a custom function to process template text.

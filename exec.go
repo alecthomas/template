@@ -12,7 +12,7 @@ import (
 	"runtime"
 	"sort"
 	"strings"
-	"text/template/parse"
+	"github.com/alecthomas/template/parse"
 )
 
 // state represents the state of an execution. It's not part of the

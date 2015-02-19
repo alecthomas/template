@@ -7,7 +7,7 @@ package template_test
 import (
 	"log"
 	"os"
-	"text/template"
+	"github.com/alecthomas/template"
 )
 
 func ExampleTemplate() {

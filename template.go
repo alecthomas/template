@@ -7,7 +7,7 @@ package template
 import (
 	"fmt"
 	"reflect"
-	"text/template/parse"
+	"github.com/alecthomas/template/parse"
 )
 
 // common holds the information shared by related templates.
