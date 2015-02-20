@@ -15,3 +15,11 @@ Will result in:
 ```
 hello
 ```
+
+Rather than:
+
+```
+
+hello
+
+```
