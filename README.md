@@ -13,13 +13,13 @@ hello
 Will result in:
 
 ```
-hello
+hello\n
 ```
 
 Rather than:
 
 ```
-
-hello
-
+\n
+hello\n
+\n
 ```
